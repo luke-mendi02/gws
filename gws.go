@@ -49,7 +49,6 @@ func embedGWS(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	// Unmarshal the JSON data into a slice of Item
 	var numbers []Number
 	err = json.Unmarshal(gws, &numbers)
 	if err != nil {
@@ -65,14 +64,14 @@ func embedGWS(w http.ResponseWriter, r *http.Request){
 	}
 	defer response.Body.Close()
 
-	// Read the response body
+
 	apiData, err := io.ReadAll(response.Body)
 	if err != nil {
 		http.Error(w, "Error reading response from external API", http.StatusInternalServerError)
 		return
 	}
 	fmt.Println("API Response:", string(apiData))
-	// Unmarshal the API data into a slice of Item
+
 	var apiItems []Number
 	err = json.Unmarshal(apiData, &apiItems)
 	if err != nil {
@@ -80,20 +79,19 @@ func embedGWS(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	// Merge the embedded data with the data from the external API
+
 	numbers = append(numbers, apiItems...)
 
-	// Marshal the merged items back to JSON
+
 	mergedResponse, err := json.Marshal(numbers)
 	if err != nil {
 		http.Error(w, "Error encoding merged JSON data", http.StatusInternalServerError)
 		return
 	}
 	
-	// Set the content type header
 	w.Header().Set("Content-Type", "application/json")
 
-	// Write the JSON response
+
 	w.Write(mergedResponse)
 
 }
@@ -109,7 +107,6 @@ func html(w http.ResponseWriter, r *http.Request) {
 //go:embed syllabus.json
 var content embed.FS
 
-// Item represents a simple struct for the JSON data
 type Syl struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
@@ -124,7 +121,7 @@ func testAPI(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Unmarshal the JSON data into a slice of Item
+	// Unmarshal the JSON data into a slice of syllabus json file
 	var syls []Syl
 	err = json.Unmarshal(data, &syls)
 	if err != nil {
@@ -132,7 +129,7 @@ func testAPI(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Marshal the items back to JSON
+	// Marshal the syl values back to JSON
 	response, err := json.Marshal(syls)
 	if err != nil {
 		http.Error(w, "Error encoding JSON data", http.StatusInternalServerError)
@@ -182,14 +179,7 @@ func help(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "/update ; stubbed update request \n")
 }
 
-/*export const _INSTRUCTOR_ERIC_POGUE = { 
-	name:'Eric Pogue', 
-	officeHours:'Tuesdays 1-3 PM and Thursdays 10-11 AM CT by appointment',
-	office:'AS-124-A', 
-	appointmentRequests:'Appointments can be requested via email',
-	lewisPhone:'(815) 836-5015',
-	lewisEmail:'epogue@lewisu.edu' 
-} */
+
 
 //embed json response in go
 //embed binary file in go
